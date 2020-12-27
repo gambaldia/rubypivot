@@ -19,6 +19,7 @@ source_data = [
 pivot = Rubypivot::Pivot.new(source_data, :month, :name, :value, data_type: :integer)
 pivot.column_titles = ['Jan', 'Feb', 'Mar']
 # pivot.options[:header] = true
+# pivot.options[:row_header] = false
 # pivot.column_titles.sort!
 # p pivot.column_titles
 # p pivot.row_titles

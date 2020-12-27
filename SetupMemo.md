@@ -15,4 +15,9 @@ cd $PROJECT
 touch SetupMemo.md # make this file
 vi $PROJECT.gemspec
 ```
+Write the source codes
 
+```
+gem build rubypivot.gemspec -o ./gems/rubypivot-new.gem
+gem install ./gems/rubypivot-new.gem
+```

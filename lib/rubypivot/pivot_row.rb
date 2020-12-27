@@ -17,10 +17,10 @@ module Rubypivot
       @lookup ? @lookup[row_title] : row_title
     end
 
-    def total(title = 'Total', column_titles = [], show_grand_total = false)
+    def total(column_titles = [], show_grand_total = false)
       return ['Total', 'row', 'can', 'not', 'create', "type :#{@data_type}"] unless [:integer, :float].include?(@data_type)
       grand_total = @data_type == :float ? 0.0 : 0
-      data_array = [title]
+      data_array = []
       column_titles.each do |column_title|
           total = @data_type == :float ? 0.0 : 0
           @rows.each do |row_title, row|

@@ -6,6 +6,7 @@ module Rubypivot
       column_sort: true,
       row_sort: true,
       header: true,
+      row_header: true,
       # column_lookup: HashName
       # row_lookup: HashName
       # :row_total: 'Title for total column'
@@ -84,7 +85,8 @@ module Rubypivot
     end
 
     def column_header
-      res = ['']
+      res = []
+      res << '' if @options[:row_header]
       if @options[:column_lookup]
         @column_titles.each do |column|
           res << @options[:column_lookup][column]
@@ -103,24 +105,28 @@ module Rubypivot
       res << column_header if @options[:header]
       @row_titles.each do |row_title|
         row = @rows_parsed.get_row(row_title)
-        data_array = row.to_a(column_titles)
+        data_array = []
+        data_array << @rows_parsed.header(row_title) if @options[:row_header]
+        data_array += row.to_a(column_titles)
         data_array << row.total(column_titles) if @options[:row_total]
-        res << [@rows_parsed.header(row_title)] + data_array
+        res << data_array
       end
       res
     end
 
-    def total_row(title)
+    def total_row(title = nil)
       parse_data unless @rows_parsed
       # title: message at title row, third(3) param is grand total true/false
-      @rows_parsed.total(title, @column_titles, @options[:row_total])
+      res = []
+      res << title if @options[:row_header]
+      res += @rows_parsed.total(@column_titles, @options[:row_total])
     end
   
     def self.build(data, column_name, row_name, data_name, options = {})
       obj = self.new(data, column_name, row_name, data_name, options)
       obj.build
     end
-  
+    # get column title or row title
     def self.get_title(name, line)
       if line.is_a?(Hash)
         res = line[name]

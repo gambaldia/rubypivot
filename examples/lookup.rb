@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # coding: utf-8
 #
-# Lookup example
+# Lookup example : column/row header can lookup hash table
 #
 APP_ROOT = File.dirname(__FILE__)
 $LOAD_PATH << "#{APP_ROOT}/../lib"
@@ -31,6 +31,8 @@ pivot.options[:data_type] = :integer # or :float or :string or nil for raw data
 pivot.options[:column_lookup] = MONTHS
 pivot.options[:row_lookup] = NAMES
 pivot.options[:row_total] = 'Personal Total'
+# pivot.options[:header] = false
+# pivot.options[:row_header] = false
 pivot.build.each do |line|
   p line
 end
