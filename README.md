@@ -10,7 +10,7 @@ Suggestions and pull requests are welcome.
 ```
 gem install rubypivot
 ```
-Not yet ready, please clone the repository for the moment.
+
 ## Usage
 
 ```ruby
