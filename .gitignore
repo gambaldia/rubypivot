@@ -6,6 +6,6 @@
 /pkg/
 /spec/reports/
 /tmp/
-/gems/
+/Gemfile.lock
+/SetupMemo.md
 .DS_Store
-/rubypivot-*.gem
