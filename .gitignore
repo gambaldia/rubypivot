@@ -8,3 +8,4 @@
 /tmp/
 /gems/
 .DS_Store
+/rubypivot-*.gem
