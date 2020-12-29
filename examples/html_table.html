@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+  <title>RubyPivot Example</title>
+  <style>
+  .container {
+    max-width: 960px;
+  }
+  .title-header {
+    max-width: 700px;
+  }
+  tr.header {
+    background-color: #eeeeff;
+    text-align: right;
+    font-weight: bold;
+  }
+  tr.data-row {
+    text-align: right;
+  }
+  tr.negative {
+    background-color: #ffeeee;
+    text-align: right;
+  }
+  td.row-header {
+    text-align: left;
+  }
+  td.data {
+    color:#3333aa;
+  }
+  td.zero {
+    color: #aaaaaa;
+  }
+  td.negative {
+    color:#aa3333;
+  }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+  <div class="title_header" name="title-header" data-bs-target="target">HTML Table Creator for pivot array</div>
+
+  <table class="table" tr_class="data-row">
+    <tr class="header"><td class="row-header"></td><td>A</td><td>B</td><td>C</td></tr>
+    <tr class="negative"><td class="row-header">Wendy</td><td class="data">1</td><td class="data">2</td><td class="negative">-3</td></tr>
+    <tr class="data-row"><td class="row-header">John</td><td class="data">4</td><td class="zero">0</td><td class="data">6</td></tr>
+    <tr class="data-row"><td class="row-header">David</td><td class="negative">-2</td><td class="data">3</td><td class="zero">0</td></tr>
+    <tr class="header"><td class="row-header">Total</td><td>3</td><td>5</td><td>3</td></tr>
+  </table>
+    
+  </div>
+</body>
+</html>

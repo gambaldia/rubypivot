@@ -12,13 +12,14 @@ module Rubypivot
       @data_array = data_array
       @attributes = []
       @data_array.each do |line|
-        @attributes << []
+        @attributes << [options[:tr_class]]
       end
       @x_size = @data_array.first.size
       @y_size = @data_array.size
     end
 
     def build(options = {})
+      tr_classes(options[:tr_class]) if options[:tr_class]
       res = open
       @data_array.each_with_index do |line, y|
         tr = HtmlTag.new("tr", class: @attributes[y][0])
@@ -44,36 +45,43 @@ module Rubypivot
     end
 
     def range_check(y)
+      if y.is_a?(Symbol)
+        if y == :bottom
+          return @y_size - 1
+        else
+          return 0
+        end
+      end
       raise StandardError, "Class set out of range: #{y} > #{@y_size}" if y > @y_size
+      y
     end
     
     def tr_class(klass, y)
       return unless klass
-      range_check(y)
+      y = range_check(y)
       @attributes[y][0] = klass
+    end
+
+    def tr_classes(klass)
+      return unless klass
+      0.upto(@attributes.size - 1) do |y|
+        @attributes[y][0] = klass
+      end
     end
 
     def set_class(klass, y, x)
       return unless klass
-      range_check(y)
+      y = range_check(y)
       raise StandardError, "Class set out of range: #{} > #{@x_size}" if x >= @x_size
       @attributes[y][x + 1] = klass
     end
 
     def row_attributes(klass, y)
       return unless klass
-      range_check(y)
+      y = range_check(y)
       1.upto(@x_size) do |pos|
         @attributes[y][pos] = klass
       end
-    end
-
-    def header_attributes(klass)
-      row_attributes(klass, 0)
-    end
-
-    def bottom_attributes(klass)
-      row_attributes(klass, @y_size - 1)
     end
 
     def column_attributes(klass, x)

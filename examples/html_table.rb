@@ -16,25 +16,28 @@ DATA_SOURCE = [
 
 def cell_class(data)
   if data.to_i < 0
-    "red"
+    "negative"
   elsif data.to_i == 0
-    "hide"
+    "zero-value"
   else
+    "data"
     nil
   end
 end
 
-div = Rubypivot::HtmlTag.new('div', class: 'section-info', id: 'my_div1', name: 'division1')
-div.add_key('data-bs-target', 'division2')
-# puts div.build { "Block Content" }
-# puts div.build(body: "Parameter Content", compact: true)
+div = Rubypivot::HtmlTag.new('div', class: 'section-info', name: 'title-header')
+div.add_key('data-bs-target', 'target')
+puts div.build { "HTML Table Creator for pivot array" }
+# puts div.build(body: "Title")
 
-table = Rubypivot::Table.new(DATA_SOURCE, class: "table-striped")
-table.tr_class("red", 1)
-table.bottom_attributes("total-header")
-table.row_attributes("data-cell", 1)
+table = Rubypivot::Table.new(DATA_SOURCE, class: "table", tr_class: "data-row")
+table.tr_class("header", :top)
+table.tr_class("header", :bottom)
+table.tr_class("alert", 1)
+# table.row_attributes("top-header", :top)
+# table.row_attributes("bottom-header", :bottom)
+# table.row_attributes("data", 1)
 table.column_attributes("row-header", 0)
-table.header_attributes("top-header")
 # coloring depending on the data value, minus=red, zero=hide, plus=normal
 DATA_SOURCE[1..DATA_SOURCE.size - 2].each_with_index do |line, i|
   y = i + 1
