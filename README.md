@@ -38,14 +38,11 @@ end
 
 
 ```ruby
-require "rubypivot/html_tag"
-require "rubypivot/table"
-table = Rubypivot::Table.new(pivot_array, class: "table", tr_class: "data-row")
-table.tr_class("header-row", :top)
-puts table.build
-
+require "rubypivot"
+spread = Rubypivot::SpreadTable.new(DATA_SOURCE, data_type: :integer)
+puts spread.to_html(class: "table table-striped", line_end: :cr)
 ```
-
+![SpreadTable](./examples/spread_table.png) 
 
 See sample scripts in examples folder.
 
