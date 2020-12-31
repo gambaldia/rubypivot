@@ -1,3 +1,3 @@
 module Rubypivot
-  VERSION = "0.0.1" # Pre-release
+  VERSION = "0.0.1"
 end

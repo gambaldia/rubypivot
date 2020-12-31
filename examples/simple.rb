@@ -18,18 +18,22 @@ source_data = [
 
 pivot = Rubypivot::Pivot.new(source_data, :month, :name, :value, data_type: :integer)
 pivot.column_titles = ['Jan', 'Feb', 'Mar']
+pivot.options[:row_total] = 'Total'
 # pivot.options[:header] = true
 # pivot.options[:row_header] = false
-# pivot.column_titles.sort!
-# p pivot.column_titles
 # p pivot.row_titles
+# p pivot.header_row('')
+# p pivot.column_titles.sort! # sorting columns
+p pivot.column_titles
+puts "------------"
+pivot.build_data.sort.each do |title, line|
+  puts "#{title}: #{line.join(", ")}"
+end
+
+puts
+puts "------------"
 pivot.build.each do |line|
   p line
 end
 puts "------------"
 p pivot.total_row('Total')
-
-#["", "Jan", "Feb", "Mar"]
-#["David", 3, nil, nil]
-#["John", 123, 23, nil]
-#["Wendy", 33, 100, nil]

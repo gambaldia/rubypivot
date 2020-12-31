@@ -4,7 +4,6 @@ module Rubypivot
     def initialize(options = {})
       @options = options
       @data_type = options[:data_type]
-      @lookup = options[:row_lookup]
       @rows = {}
     end
 
@@ -12,10 +11,6 @@ module Rubypivot
       @rows[row_title] ||= PivotRow.new(row_title, @data_type)
     end
     alias :add_row :get_row
-
-    def header(row_title)
-      @lookup ? @lookup[row_title] : row_title
-    end
 
     def total(column_titles = [], show_grand_total = false)
       return ['Total', 'row', 'can', 'not', 'create', "type :#{@data_type}"] unless [:integer, :float].include?(@data_type)

@@ -2,8 +2,8 @@ module Rubypivot
 
 # Create HTML table from array
 # having row (tr) and cell (td) attribute control
-# rubypivot main gem does not include this, maybe won't be using
-# 
+# 使わないかも
+# 2020-12-31
 class TableBuilder
     attr_accessor :options
     attr_reader :x_size, :y_size

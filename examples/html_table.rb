@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 # coding: utf-8
 #
+# Make HTML table from spread sheet array
+#
 APP_ROOT = File.dirname(__FILE__)
 $LOAD_PATH << "#{APP_ROOT}/../lib"
 require "rubypivot/html_tag"
@@ -21,16 +23,10 @@ def cell_class(data)
     "zero-value"
   else
     "data"
-    nil
   end
 end
 
-div = Rubypivot::HtmlTag.new('div', class: 'section-info', name: 'title-header')
-div.add_key('data-bs-target', 'target')
-puts div.build { "HTML Table Creator for pivot array" }
-# puts div.build(body: "Title")
-
-table = Rubypivot::Table.new(DATA_SOURCE, class: "table", tr_class: "data-row")
+table = Rubypivot::TableBuilder.new(DATA_SOURCE, class: "table", tr_class: "data")
 table.tr_class("header", :top)
 table.tr_class("header", :bottom)
 table.tr_class("alert", 1)
@@ -47,4 +43,4 @@ DATA_SOURCE[1..DATA_SOURCE.size - 2].each_with_index do |line, i|
     table.set_class(klass, y, x) if klass
   end
 end
-puts table.build
+puts table.build # see html_table.html in example dir

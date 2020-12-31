@@ -21,11 +21,15 @@
   tr.data-row {
     text-align: right;
   }
-  tr.negative {
+  tr.data-girl {
     background-color: #ffeeee;
     text-align: right;
   }
-  td.row-header {
+  td.header-title {
+    text-align: left;
+  }
+  td.data-title {
+    background-color: #ffffee;
     text-align: left;
   }
   td.data {
@@ -44,13 +48,13 @@
 
   <div class="title_header" name="title-header" data-bs-target="target">HTML Table Creator for pivot array</div>
 
-  <table class="table" tr_class="data-row">
-    <tr class="header"><td class="row-header"></td><td>A</td><td>B</td><td>C</td></tr>
-    <tr class="negative"><td class="row-header">Wendy</td><td class="data">1</td><td class="data">2</td><td class="negative">-3</td></tr>
-    <tr class="data-row"><td class="row-header">John</td><td class="data">4</td><td class="zero">0</td><td class="data">6</td></tr>
-    <tr class="data-row"><td class="row-header">David</td><td class="negative">-2</td><td class="data">3</td><td class="zero">0</td></tr>
-    <tr class="header"><td class="row-header">Total</td><td>3</td><td>5</td><td>3</td></tr>
-  </table>
+  <table class="table table-striped">
+    <tr class="header"><td class="header-title"></td><td>A</td><td>B</td><td>C</td></tr>
+    <tr class="data-girl"><td class="data-title">Wendy</td><td>1</td><td>2</td><td class="negative">-3</td></tr>
+    <tr class="data-row"><td class="data-title">John</td><td>4</td><td class="zero">0</td><td>6</td></tr>
+    <tr class="data-row"><td class="data-title">David</td><td class="negative">-2</td><td>3</td><td class="zero">0</td></tr>
+    <tr class="header"><td class="header-title">Total</td><td>3</td><td>5</td><td>3</td></tr>
+    </table>
     
   </div>
 </body>

@@ -1,5 +1,8 @@
 module Rubypivot
-
+#
+# 2020-12-28 First
+# 2020-12-30 Build an hash instead array
+#
   class Pivot
     DEFAULT_OPTIONS = {
       data_type: :integer, # :integer, :float or :string
@@ -9,7 +12,7 @@ module Rubypivot
       row_header: true,
       # column_lookup: HashName
       # row_lookup: HashName
-      # :row_total: 'Title for total column'
+      # row_total: 'Title for total column, if nil row total not calculated'
     }.freeze
 
     attr_accessor :options
@@ -50,6 +53,10 @@ module Rubypivot
       @row_titles || make_row_list
     end
 
+    def column_head(row_title)
+      @options[:row_lookup] ? @options[:row_lookup][row_title] : row_title
+    end
+
     def make_column_list
       @column_titles = [] unless @column_titles
       @source_data.each do |each_line|
@@ -84,9 +91,40 @@ module Rubypivot
       self
     end
 
-    def column_header
+    # return an pivot hash. data rows only
+    def build_data
+      parse_data unless @rows_parsed
+      res = {}
+      @row_titles.each do |row_title|
+        row = @rows_parsed.get_row(row_title)
+        title = column_head(row_title)
+        res[title] = row.to_a(column_titles)
+      end
+      res
+    end
+    alias :build_hash :build_data
+
+    # return an pivot array with titles
+    def build
+      parse_data unless @rows_parsed
       res = []
-      res << '' if @options[:row_header]
+      res << header_row if @options[:header]
+      @row_titles.each do |row_title|
+        row = @rows_parsed.get_row(row_title)
+        data_array = []
+        data_array << column_head(row_title) if @options[:row_header] 
+        data_array += row.to_a(column_titles)
+        data_array << row.total(column_titles) if @options[:row_total]
+        res << data_array
+      end
+      res
+    end
+    alias :build_array :build
+
+    # Make an array
+    def header_row(title = nil)
+      res = []
+      res << "#{title}" if @options[:row_header]
       if @options[:column_lookup]
         @column_titles.each do |column|
           res << @options[:column_lookup][column]
@@ -98,22 +136,6 @@ module Rubypivot
       res
     end
 
-    # return an pivot array
-    def build
-      parse_data unless @rows_parsed
-      res = []
-      res << column_header if @options[:header]
-      @row_titles.each do |row_title|
-        row = @rows_parsed.get_row(row_title)
-        data_array = []
-        data_array << @rows_parsed.header(row_title) if @options[:row_header]
-        data_array += row.to_a(column_titles)
-        data_array << row.total(column_titles) if @options[:row_total]
-        res << data_array
-      end
-      res
-    end
-
     def total_row(title = nil)
       parse_data unless @rows_parsed
       # title: message at title row, third(3) param is grand total true/false
@@ -122,10 +144,6 @@ module Rubypivot
       res += @rows_parsed.total(@column_titles, @options[:row_total])
     end
   
-    def self.build(data, column_name, row_name, data_name, options = {})
-      obj = self.new(data, column_name, row_name, data_name, options)
-      obj.build
-    end
     # get column title or row title
     def self.get_title(name, line)
       if line.is_a?(Hash)
@@ -144,6 +162,10 @@ module Rubypivot
         line.send(name)
       end
     end
-    
+
+    def self.build(data, column_name, row_name, data_name, options = {})
+      obj = self.new(data, column_name, row_name, data_name, options)
+      obj.build
+    end
   end
 end
