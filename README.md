@@ -36,7 +36,6 @@ spread.rows.each do |row|
 end
 ```
 
-
 ```ruby
 require "rubypivot"
 spread = Rubypivot::SpreadTable.new(DATA_SOURCE, data_type: :integer)
@@ -51,10 +50,13 @@ Supported data aggregation is only SUM for numeric values.
 Total calculation supported.
 
 
+## To do-s
+
+- Bootstrap Grid output
+
 ## History
 
-- Ver. 0.0.3 : 2020-12-30 HTML table creation support
-- Ver. 0.0.2 : 2020-12-30 SpreadTable: SpreadSheet type Array of Hashes(sheet row)
+- Ver. 0.0.2 : 2021-01-01 New class SpreadTable supports to_s, to_html (HTML table), to_grid (Bootstrap grid)
 - Ver. 0.0.1 : 2020-12-28 First release. Making pivot array
 
 ## License

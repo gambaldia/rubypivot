@@ -3,8 +3,6 @@
 # to help HTML table
 #
 # 2020-12-31
-# TODO callback function for cell(td) attribute
-# TODO to_html
 #
 
 class Array
@@ -56,11 +54,16 @@ module Rubypivot
       @line_type = line_type
       @line_type = :data unless LINE_TYPES[@line_type] # at least vaid must be set
       if @line_type == :data
-        @attribute[:tr_class] = options[:data_tr_class] if options[:data_tr_class]
+        @attribute[:line_class] = options[:data_line_class] if options[:data_line_class]
         @attribute[:title_class] = options[:data_title_class] if options[:data_title_class]
       else
-        @attribute[:tr_class] = options[:header_tr_class] if options[:header_tr_class]
+        @attribute[:line_class] = options[:header_line_class] if options[:header_line_class]
         @attribute[:title_class] = options[:header_title_class] if options[:header_title_class]
+      end
+      if @line_type == :header
+        #
+      else
+        @attribute[:data_format] = options[:data_format] if options[:data_format]
       end
     end
 
@@ -68,57 +71,100 @@ module Rubypivot
       @line_data.size
     end
 
-    def set_tr_class(klass)
-      puts "#{klass}"
-      @attribute[:tr_class] = klass
+    def set_line_class(klass)
+      @attribute[:line_class] = klass
     end
 
     def set_td_class(klass)
-      @attribute[:td_class] = klass
+      @attribute[:cell_class] = klass
     end
 
     def set_title_class(klass)
-      @attribute[:td_class] = klass
+      @attribute[:cell_class] = klass
     end
 
     def set_cell_class(callback)
       return unless callback
       if callback.is_a?(Method)
-        @line_data.each_with_index do |cell, idx|
-          klass = callback.call(cell, @title)
+        @line_data.each_with_index do |cell_data, idx|
+          klass = callback.call(cell_data, @title)
           @attribs[idx] = klass if klass
         end
       else
-        @line_data.each_with_index do |cell, idx|
+        @line_data.each_with_index do |cell_data, idx|
           @attribs[idx] = callback.to_s
         end
       end
+    end
+
+    def set_cell_callback(callback)
+      return if callback.nil? || !callback.is_a?(Method) 
+      if @line_type == :header
+        @attribute[:cell_callback] = callback
+      else
+        @attribute[:cell_callback] = callback
+      end
+    end
+
+    def line_data_formatted
+      return @line_data if @line_type == :header || @attribute[:data_format].nil?
+      res = []
+      @line_data.each do |data|
+        res << @attribute[:data_format] % data
+      end
+      res
     end
 
     def to_s
       res = ""
       res << "#{LINE_TYPES[@line_type]}: "
       res << "#{@title}: " if @title
-      res << @line_data.join(', ')
-      res << " : TR Class: #{@attribute[:tr_class]}"
-      res << " : TD Class: #{@attribute[:td_class]}"
+      res << line_data_formatted.join(', ')
+      res << " : Line Class: #{@attribute[:line_class]}"
+      res << " : Cell Class: #{@attribute[:cell_class]}"
       res << " : Title Class: #{@attribute[:title_class]}"
       res
     end
 
     def to_html(options = {})
-      tr = Rubypivot::HtmlTag.new('tr', class: @attribute[:tr_class])
+      tr = Rubypivot::HtmlTag.new('tr', class: @attribute[:line_class])
       td_str = ""
       if @title
-        td = Rubypivot::HtmlTag.new('td', class: @attribute[:title_class] || @attribute[:td_class])
+        td = Rubypivot::HtmlTag.new('td', class: @attribute[:title_class] || @attribute[:cell_class])
         td_str << td.build{ @title } 
       end
-      @line_data.each_with_index do |cell_data, idx|
-        td = Rubypivot::HtmlTag.new('td', class: @attribs[idx])
-        td_str << td.build{ cell_data }
+      line_data_formatted.each_with_index do |cell_data, idx|
+        if @attribute[:cell_callback]
+          td_str << @attribute[:cell_callback].call(cell_data, @title)
+        else
+          td = Rubypivot::HtmlTag.new('td', class: @attribs[idx])
+          td_str << td.build{ cell_data }
+        end
       end
       res = tr.build { td_str }
       res << "\n" if options[:line_end] == :cr
+      res
+    end
+
+    def make_col_class(options = {})
+      klass = "col"
+      klass << "-#{@attribute[:line_class]}" if @attribute[:line_class]
+      klass << "-#{options[:width]}" if options[:width]
+      # klass << " #{options[:klass]}" if options[:klass]
+      klass
+    end
+
+    def to_grid(framework = :bootstrap, widths = [], options = {})
+      res = "<div class=\"row\">"
+      if @title
+        div = Rubypivot::HtmlTag.new('div', class: make_col_class(width: widths[0])) # klass: @attribute[:title_class]
+        res << div.build{ @title } 
+      end
+      line_data_formatted.each_with_index do |cell_data, idx|
+        div = Rubypivot::HtmlTag.new('div', class: make_col_class(width: widths[idx + 1])) # klass: @attribute[:title_class]
+        res << div.build{ cell_data }
+      end
+      res << "</div>/n"
       res
     end
   end
@@ -131,7 +177,7 @@ module Rubypivot
       @options = {}
       @options_for_line = {}
       options.each do |k, v|
-        if [:title, :data_tr_class, :header_tr_class, :data_title_class, :header_title_class].include?(k)
+        if [:title, :data_line_class, :header_line_class, :data_title_class, :header_title_class, :data_format].include?(k)
           @options_for_line[k] = v
         else
           @options[k] = v
@@ -164,7 +210,8 @@ module Rubypivot
       when :last, :bottom
         @rows.last.set_line_type(line_type, @options_for_line)
       else
-        if (pos = position.to_i) >= 0 && @rows.size - 1
+        row = get_row(position)
+        if row
           @rows[pos].set_line_type(line_type, @options_for_line)
         end
       end
@@ -176,9 +223,19 @@ module Rubypivot
       calc_data_size
     end
 
-    def line(pos)
-      @rows[pos] if pos < @rows.size - 1
+    def get_row(position)
+      if position.is_a?(Symbol)
+        if position == :last
+          @rows.last
+        else
+          @rows.first
+        end
+      else
+        pos = position.to_i
+        @rows[pos] if pos >= 0 && pos < @rows.size - 1
+      end
     end
+    alias :line :get_row
 
     def total_height
       @rows.size
@@ -206,6 +263,20 @@ module Rubypivot
       end
     end
 
+    def set_line_class(klass)
+      return unless klass
+      each do |line|
+        line.set_line_class(klass)
+      end
+    end
+
+    def set_cell_callback(callback)
+      return if callback.nil? || !callback.is_a?(Method)
+      each_non_header_line do |line|
+        line.set_cell_callback(callback)
+      end
+    end
+
     def each
       @rows.each do |row|
         yield row
@@ -226,6 +297,13 @@ module Rubypivot
       end
     end
   
+    def each_non_header_line
+      @rows.each do |row|
+        next if row.line_type == :header
+        yield row
+      end
+    end
+  
     def to_s
       @rows.each do |row|
         puts row.to_s
@@ -240,6 +318,14 @@ module Rubypivot
         res << row.to_html(line_end: line_end)
       end
       res << "</table>\n"
+      res
+    end
+    # Bootstrap grid
+    def to_grid(framework = :bootstrap, widths = [], options = {})
+      res = ""
+      @rows.each do |row|
+        res << row.to_grid(framework, widths)
+      end
       res
     end
   
